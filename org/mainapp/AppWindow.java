@@ -26,6 +26,10 @@ public class AppWindow extends JFrame {
     boolean showFinishedItems = true;
     boolean showUnfinishedTaskCount = true;
 
+    /* Extra - disable some menu items when offline mode is on */
+    JMenuItem syncMenuItem;
+    JMenuItem logoutMenuItem;
+
     private JLabel userLabel;
     private JPanel rightPanel;
     private JPanel leftPanel;
@@ -56,11 +60,13 @@ public class AppWindow extends JFrame {
         // 用户菜单
         JMenu menu = new JMenu("用户");
         JMenuItem menuItem = new JMenuItem("从云端重新同步");
+        syncMenuItem = menuItem;
         menuItem.addActionListener(e -> {
             this.openAndInit();
         });
         menu.add(menuItem);
         menuItem = new JMenuItem("注销登录");
+        logoutMenuItem = menuItem;
         menuItem.addActionListener(e -> {
             mainControllerRef.logout();
         });
@@ -164,26 +170,34 @@ public class AppWindow extends JFrame {
             e.printStackTrace();
         }
 
-        // 获取列表
-        var res = APIHandler.getFullData(mainControllerRef.user.token);
-        if (!res.code.equals("ok")) {
-            var jDialog = new JDialog(this, "错误", true);
-            jDialog.setSize(300, 100);
-            jDialog.setLocationRelativeTo(null);
-            jDialog.setResizable(false);
-            jDialog.setLayout(new FlowLayout());
-            jDialog.add(new JLabel("获取列表失败，请重新启动应用。错误信息：" + res.message));
-            jDialog.setVisible(true);
-            return;
-        }
-        this.mainControllerRef.collections = res.collections;
-        this.mainControllerRef.items = res.items;
-        this.mainControllerRef.sortItems();
-        if (res.collections.size() == 0) {
-            // so, create a default collection
+        if (GlobalConst.mainAPIServer == MainAPIServer.offline) {
             this.addCollectionCallback("默认列表");
+            this.selectedCollectionUUID = mainControllerRef.collections.get(0).uuid;
+            this.syncMenuItem.setEnabled(false);
+            this.logoutMenuItem.setEnabled(false);
+        } else {
+
+            // 获取列表
+            var res = APIHandler.getFullData(mainControllerRef.user.token);
+            if (!res.code.equals("ok")) {
+                var jDialog = new JDialog(this, "错误", true);
+                jDialog.setSize(300, 100);
+                jDialog.setLocationRelativeTo(null);
+                jDialog.setResizable(false);
+                jDialog.setLayout(new FlowLayout());
+                jDialog.add(new JLabel("获取列表失败，请重新启动应用。错误信息：" + res.message));
+                jDialog.setVisible(true);
+                return;
+            }
+            this.mainControllerRef.collections = res.collections;
+            this.mainControllerRef.items = res.items;
+            this.mainControllerRef.sortItems();
+            if (res.collections.size() == 0) {
+                // so, create a default collection
+                this.addCollectionCallback("默认列表");
+            }
+            this.selectedCollectionUUID = res.collections.get(0).uuid;
         }
-        this.selectedCollectionUUID = res.collections.get(0).uuid;
 
         // this.bottomText.setText("就绪");
 

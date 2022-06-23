@@ -28,7 +28,55 @@ public class LoginWindow extends JFrame {
         // 菜单栏
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu menu = new JMenu("关于");
+        JMenu menu = new JMenu("选择服务器");
+        var indicator = new JMenuItem("不同服务器的数据不互通");
+        indicator.setEnabled(false);
+        menu.add(indicator);
+        JSeparator separator = new JSeparator();
+        separator.setOpaque(false);
+        menu.add(separator);
+        var server1 = new JRadioButtonMenuItem("MongoDB 后端");
+        var server2 = new JRadioButtonMenuItem("MySQL 后端");
+        var server3 = new JRadioButtonMenuItem("离线启动");
+        server1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GlobalConst.switchMainAPIServer(MainAPIServer.mongodb);
+                server1.setSelected(true);
+                server2.setSelected(false);
+                server3.setSelected(false);
+                openAndInit();
+            }
+        });
+        server2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GlobalConst.switchMainAPIServer(MainAPIServer.mysql);
+                server1.setSelected(false);
+                server2.setSelected(true);
+                server3.setSelected(false);
+                openAndInit();
+            }
+        });
+        server3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GlobalConst.switchMainAPIServer(MainAPIServer.offline);
+                server1.setSelected(false);
+                server2.setSelected(false);
+                server3.setSelected(true);
+                finishAuth();
+            }
+        });
+        server1.setSelected(true); // default
+
+        menu.add(server1);
+        menu.add(server2);
+        menu.add(server3);
+
+        menuBar.add(menu);
+
+        menu = new JMenu("关于");
         JMenuItem menuItem2 = new JMenuItem("关于 JToDo");
         JMenuItem menuItem3 = new JMenuItem("更新日志");
         menuItem2.addActionListener(e -> {
@@ -137,32 +185,39 @@ public class LoginWindow extends JFrame {
             finishAuth();
         }
     };
+
     void finishAuth() {
         // ok now begin
         this.bottomMessage.setText("正在验证授权，请稍等...");
         this.actionButton.setEnabled(false);
 
-        var res = APIHandler.finishAuthentication(qAuthObjectID);
+        if (GlobalConst.mainAPIServer == MainAPIServer.offline) {
+            // 离线支持
+            mainControllerRef.user = new UserInfo("OFFLINE MODE", "User", GlobalConst.defaultAvatarUrl);
+            mainControllerRef.initUserData();
+        } else {
+            var res = APIHandler.finishAuthentication(qAuthObjectID);
 
-        if (!res.code.equals("ok")) {
-            this.bottomMessage.setText("验证遇到问题：" + res.message);
-            this.actionButton.setEnabled(true);
-            var dialog = new JDialog(this, "验证失败", true);
-            dialog.setLayout(new BorderLayout());
-            dialog.add(new JLabel("验证未完成，请重试。\n错误信息: " + res.message), BorderLayout.CENTER);
-            dialog.setSize(300, 100);
-            dialog.setLocationRelativeTo(this);
-            dialog.setVisible(true);
-            return;
+            if (!res.code.equals("ok")) {
+                this.bottomMessage.setText("验证遇到问题：" + res.message);
+                this.actionButton.setEnabled(true);
+                var dialog = new JDialog(this, "验证失败", true);
+                dialog.setLayout(new BorderLayout());
+                dialog.add(new JLabel("验证未完成，请重试。\n错误信息: " + res.message), BorderLayout.CENTER);
+                dialog.setSize(300, 100);
+                dialog.setLocationRelativeTo(this);
+                dialog.setVisible(true);
+                return;
+            }
+
+            mainControllerRef.user = new UserInfo(res.token, res.username, res.avatarUrl);
+            // ok
+            this.bottomTextField.setVisible(false);
+            this.resetButton.setVisible(false);
+            this.bottomMessage.setText("授权成功，正在获取用户数据...");
+
+            mainControllerRef.initUserData();
         }
-
-        mainControllerRef.user = new UserInfo(res.token, res.username, res.avatarUrl);
-        // ok
-        this.bottomTextField.setVisible(false);
-        this.resetButton.setVisible(false);
-        this.bottomMessage.setText("授权成功，正在获取用户数据...");
-
-        mainControllerRef.initUserData();
 
     }
 

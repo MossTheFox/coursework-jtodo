@@ -63,7 +63,7 @@ public class APIHandler {
         body.append("qqAuth", qqAuthObjectID);
 
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(GlobalConst.finishAuthenticationURL))
+                .uri(URI.create(GlobalConst.getFinishAuthenticationURL()))
                 .header("Content-Type", "application/json;charset=utf-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .timeout(Duration.ofSeconds(5))
@@ -101,7 +101,7 @@ public class APIHandler {
      */
     static GetFullDataResponse getFullData(String token) {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(GlobalConst.initialGetDataUrl))
+                .uri(URI.create(GlobalConst.getInitialGetDataUrl()))
                 .header("Authorization", "Bearer " + token)
                 .GET()
                 .timeout(Duration.ofSeconds(5))
@@ -132,7 +132,7 @@ public class APIHandler {
      */
     static CompletableFuture<Object> fireSyncData(String bearerToken, String requestBodyJSONString, Consumer<String> callback, Consumer<String> errorCallback) {
         var request = HttpRequest.newBuilder()
-                .uri(URI.create(GlobalConst.syncUrl))
+                .uri(URI.create(GlobalConst.getSyncUrl()))
                 .header("Content-Type", "application/json;charset=utf-8")
                 .header("Authorization", "Bearer " + bearerToken)
                 .method("PATCH", HttpRequest.BodyPublishers.ofString(requestBodyJSONString))

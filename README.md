@@ -11,9 +11,11 @@ So, here you go.
 
 This app works as a client side app. 
 For the server side, see the 
-[JToDo-Server](https://github.com/MossTheFox/coursework-jtodo-server) project.
+[JToDo-Server](https://github.com/MossTheFox/coursework-jtodo-server) or [JToDo-Server-MySQL-version](https://github.com/MossTheFox/coursework-jtodo-server-alt) project.
 
 Screenshots:
+
+![Login](https://raw.githubusercontent.com/MossTheFox/coursework-jtodo/master/screenshots/JToDo-Client-Login.png)
 
 ![Main App](https://raw.githubusercontent.com/MossTheFox/coursework-jtodo/master/screenshots/JToDo-Client-1.png)
 
@@ -44,7 +46,11 @@ It's an Intellij IDEA project. Pull the repository and open it with Intellij IDE
 Notice that the SSL of the API server is not trusted by Java, so you need to add a certificate to your cacerts file. 
 See comments in /org/mainapp/GlobalConst.java for more information.
 
-You can modify the code to force it to launch in offline mode as well (meaning to skip the user authentication process). The failure of network requests won't crash the app, so you can ignore it when running in offline mode.
+<del>You can modify the code to force it to launch in offline mode as well (meaning to skip the user authentication process)</del>. 
+
+The app now supports offline mode. You can enable it in the login menu.
+
+The failure of network requests won't crash the app, so you can ignore it when running in offline mode.
 
 ### Usage
 
@@ -58,7 +64,7 @@ The server I hosted might be shut down at any time, so if you are looking for ch
 
 The authentication logic might need some change though, if you are hosting it on your own server.
 
-Or, modify the code to force it to launch in offline mode.
+Or, there is an offline-mode that can be enabled in the login menu. You can check that if you simply want to see how this app looks like.
 
 ### License
 

@@ -196,8 +196,12 @@ public class MainController {
         appWindow.openAndInit();
         loginWindow.dispose();
         // now create Sync object
-        syncController = new SyncController(this);
-        syncController.initAndRun();
+        if (GlobalConst.mainAPIServer != MainAPIServer.offline) {
+            syncController = new SyncController(this);
+            syncController.initAndRun();
+        } else {
+            setCurrentMessage("Offline mode.");
+        }
         alertController = new AlertController(this);
         alertController.init();
     }
@@ -205,6 +209,7 @@ public class MainController {
     void logout() {
         this.loginWindow.openAndInit();
         this.appWindow.setVisible(false);
+        this.syncTaskQueue.clear();
         this.syncController.stop();
         this.items.clear();
         this.collections.clear();
