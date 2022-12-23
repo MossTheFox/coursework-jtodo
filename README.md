@@ -60,7 +60,7 @@ In fact, seeing this project as a practice of using Swing and AWT to create a GU
 
 OK, in general, this app helps you to manage your tasks, and set alerts to remind you of them. All tasks sync with the server.
 
-The server I hosted might be shut down at any time, so if you are looking for checking and modifying the code, go to the [JToDo-Server](https://github.com/MossTheFox/coursework-jtodo-server) project to get the server-side code. You can host them on your own server.
+The server I hosted <del>might be shut down at any time</del> is now closed intentially for this app, so if you are looking for checking and modifying the code, go to the [JToDo-Server](https://github.com/MossTheFox/coursework-jtodo-server) project to get the server-side code. You can host them on your own server.
 
 The authentication logic might need some change though, if you are hosting it on your own server.
 
